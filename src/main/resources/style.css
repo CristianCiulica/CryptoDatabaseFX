@@ -3,88 +3,95 @@
     -fx-font-family: 'Segoe UI', sans-serif;
 }
 
-/* --- PAGINA DE START (WELCOME) --- */
+/* --- PAGINA DE START --- */
 .welcome-root {
-    /* AICI AM SCHIMBAT NUMELE IMAGINII */
     -fx-background-image: url('fundal.png');
     -fx-background-size: cover;
     -fx-background-position: center;
 }
 
-/* Cutia centrală - Stil "Glass" curat */
+/* CARDUL CENTRAL - EFECT DRAMATIC DE LUMINĂ */
 .welcome-container {
-    -fx-background-color: rgba(255, 255, 255, 0.95); /* Alb aproape opac */
-    -fx-background-radius: 12; /* Colțuri rotunjite fin */
-    -fx-padding: 40;
-    /* Umbră foarte fină și difuză, nu neagră și groasă */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 5);
+    /* Gradient puternic: Alb (sus-dreapta) -> Gri (jos-stânga) */
+    -fx-background-color: linear-gradient(to bottom left, #ffffff 0%, #a0a0a0 100%);
+
+    /* Umbră neagră, puternică și deplasată */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 60, 0.4, -30, 30);
+
+    -fx-background-radius: 15;
+    -fx-padding: 60;
 }
 
-/* Titlul - Simplu, Gri închis, Fără efecte neon */
+/* Titlul */
 .welcome-title {
-    -fx-font-size: 28px;
+    -fx-font-size: 40px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333333;
+    -fx-text-fill: #111;
     -fx-padding: 0 0 10 0;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.8), 5, 0.5, 0, 0);
 }
 
-/* Subtitlul */
 .welcome-subtitle {
-    -fx-font-size: 14px;
-    -fx-text-fill: #666666;
-    -fx-padding: 0 0 30 0;
+    -fx-font-size: 18px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 40 0;
 }
 
-/* Butoanele de Start - Simple și curate */
+/* --- BUTOANE FLAT (SIMPLE) --- */
 .start-btn {
-    -fx-background-color: #0078d7; /* Albastru Windows standard */
+    -fx-background-color: #0078d7;
     -fx-text-fill: white;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-background-radius: 6;
-    -fx-padding: 12 30;
+    -fx-background-radius: 6; /* Puțin rotunjite */
+    -fx-padding: 12 40;
     -fx-cursor: hand;
-    -fx-min-width: 220px;
-    -fx-border-width: 0;
+    -fx-min-width: 300px;
+    -fx-effect: null; /* Fără umbră (Flat) */
 }
 
 .start-btn:hover {
-    -fx-background-color: #005a9e; /* Albastru puțin mai închis la hover */
+    -fx-background-color: #005a9e;
 }
 
-/* --- DASHBOARD (MENIUL LATERAL) --- */
+/* --- MENIU LATERAL --- */
 .sidebar {
-    -fx-background-color: #f4f4f4; /* Gri foarte deschis */
+    -fx-background-color: #f4f4f4;
     -fx-padding: 15;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 1 0 0; /* Doar o linie fină în dreapta */
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0 1 0 0;
 }
-
 .menu-title {
-    -fx-text-fill: #888888;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 0 10 5;
+    -fx-text-fill: #222;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 10 0 20 5;
 }
-
-/* Butoanele din meniu - Flat design */
+.section-label {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #0078d7;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8 10;
+    -fx-background-radius: 4;
+    -fx-alignment: center-left;
+    -fx-max-width: Infinity;
+    -fx-margin: 15 0 5 0;
+}
 .menu-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #333333;
+    -fx-text-fill: #333;
     -fx-font-size: 13px;
     -fx-alignment: center-left;
     -fx-cursor: hand;
-    -fx-padding: 10 15;
-    -fx-background-radius: 6;
+    -fx-padding: 8 15;
+    -fx-background-radius: 4;
 }
-
 .menu-button:hover {
-    -fx-background-color: #e1e1e1; /* Gri deschis la hover */
+    -fx-background-color: #ddd;
 }
-
-/* Butonul roșu de ieșire */
 .back-button {
-    -fx-background-color: transparent;
     -fx-text-fill: #d32f2f;
     -fx-font-weight: bold;
 }
@@ -92,78 +99,56 @@
     -fx-background-color: #ffebee;
 }
 
-/* --- TABELUL --- */
-.table-view {
-    -fx-background-color: white;
-    -fx-border-color: transparent;
-}
+/* --- AICI AM MODIFICAT: STILUL MATRIX PENTRU SQL --- */
 
-.table-view .column-header-background {
-    -fx-background-color: white;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 0 1 0;
-}
-
-.table-view .column-header .label {
-    -fx-text-fill: #555555;
-    -fx-font-weight: bold;
-}
-
-.table-row-cell {
-    -fx-background-color: white;
-    -fx-border-color: #f0f0f0;
-    -fx-border-width: 0 0 1 0;
-}
-
-.table-cell {
-    -fx-text-fill: #333333;
-    -fx-alignment: center-left;
-}
-
-/* Rând selectat - Albastru deschis */
-.table-view:focused .table-row-cell:selected {
-    -fx-background-color: #e3f2fd;
-}
-
-/* --- STATUS BAR --- */
-.status-bar {
-    -fx-background-color: #ffffff;
-    -fx-text-fill: #666666;
-    -fx-padding: 8;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 1 0 0 0;
-}
-/* --- ZONA EDITOR SQL (CUSTOM QUERY) --- */
-.editor-container {
-    -fx-background-color: #ffffff;
-    -fx-padding: 20;
-}
-
-.sql-text-area {
-    -fx-font-family: 'Consolas', 'Monospaced', monospace; /* Font de programare */
+/* 1. Consola din Dashboard */
+.sql-console {
+    /* Fundal Negru */
+    -fx-control-inner-background: #121212;
+    /* Text Verde Neon */
+    -fx-text-fill: #00e676;
+    -fx-font-family: 'Consolas', monospace;
     -fx-font-size: 14px;
-    -fx-control-inner-background: #1e1e1e; /* Fundal negru editor */
-    -fx-text-fill: #00e676; /* Text verde matrix */
-    -fx-highlight-fill: #0078d7;
-    -fx-highlight-text-fill: white;
-    -fx-background-radius: 5;
-    -fx-border-color: #cccccc;
-    -fx-border-radius: 5;
+    -fx-border-width: 0;
+    /* Culoare selecție text */
+    -fx-highlight-fill: #00e676;
+    -fx-highlight-text-fill: black;
 }
 
-.run-btn {
-    -fx-background-color: #28a745;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-}
-.run-btn:hover {
-    -fx-background-color: #218838;
+/* 2. Editorul Custom (Unde scrii tu) */
+.sql-text-area {
+    /* Fundal Negru */
+    -fx-control-inner-background: #121212;
+    /* Text Verde Neon */
+    -fx-text-fill: #00e676;
+    -fx-font-family: 'Consolas', monospace;
+    -fx-font-size: 15px;
+    -fx-border-color: #333;
+    -fx-border-radius: 4;
+    /* Culoare selecție text */
+    -fx-highlight-fill: #00e676;
+    -fx-highlight-text-fill: black;
 }
 
-.section-label {
+/* Containerul editorului */
+.editor-container {
+    -fx-background-color: #f0f0f0; /* Gri deschis în jur */
+}
+
+/* --- TABEL --- */
+.table-view .column-header-background {
+    -fx-background-color: #fff;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: #eee;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #444;
     -fx-font-weight: bold;
-    -fx-text-fill: #0078d7;
-    -fx-padding: 15 0 5 10;
-    -fx-font-size: 13px;
+}
+.status-bar {
+    -fx-background-color: white;
+    -fx-text-fill: #666;
+    -fx-padding: 5 15;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1 0 0 0;
 }

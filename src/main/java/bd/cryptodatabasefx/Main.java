@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.sql.*;
@@ -16,35 +17,35 @@ import java.util.Objects;
 
 public class Main extends Application {
 
-    // --- CONFIGURARE BAZA DE DATE ---
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/BD_Platforma_Crypto";
-    static final String USER = "postgres";
-    static final String PASS = "1q2w3e"; // <--- PAROLA TA ACTUALIZATA
-
     private Stage primaryStage;
     private String cssPath;
 
-    // Componente refolosibile
     private TableView<ObservableList<String>> table;
     private Label statusLabel;
-    private TextArea sqlEditor; // Zona unde scrii cod manual
+    private TextArea sqlEditor;
+    private TextArea sqlDisplayArea;
 
     @Override
     public void start(Stage stage) {
         this.primaryStage = stage;
-        this.primaryStage.setTitle("Crypto Platform Manager 3.0");
+        this.primaryStage.setTitle("Platformă Crypto - Proiect BD");
 
         try {
             cssPath = Objects.requireNonNull(getClass().getResource("/style.css")).toExternalForm();
         } catch (Exception e) {
-            System.out.println("Eroare incarcare CSS. Verifica folderul resources.");
+            System.out.println("Eroare încărcare CSS.");
         }
 
+        StackPane root = new StackPane();
+        Scene scene = new Scene(root, 1200, 750);
+        if(cssPath != null) scene.getStylesheets().add(cssPath);
+
+        primaryStage.setScene(scene);
         showWelcomeScreen();
         primaryStage.show();
     }
 
-    // --- SCENA 1: PAGINA DE START ---
+    // --- ECRAN START ---
     private void showWelcomeScreen() {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
@@ -52,42 +53,41 @@ public class Main extends Application {
 
         VBox contentBox = new VBox(20);
         contentBox.setAlignment(Pos.CENTER);
-        contentBox.setMaxWidth(600);
+        contentBox.setMaxWidth(750);
         contentBox.getStyleClass().add("welcome-container");
 
-        Label title = new Label("Crypto Manager Platform");
+        Label title = new Label("Platformă de Tranzacționare a Criptomonedelor");
         title.getStyleClass().add("welcome-title");
+        title.setWrapText(true);
+        title.setTextAlignment(TextAlignment.CENTER);
 
-        Label subtitle = new Label("Sistem Avansat de Gestiune & Raportare");
+        Label subtitle = new Label("Proiect Baze de Date");
         subtitle.getStyleClass().add("welcome-subtitle");
 
-        Button btnDemo = new Button("Alege Interogari Predefinite");
+        Button btnDemo = new Button("Rapoarte Predefinite");
         btnDemo.getStyleClass().add("start-btn");
         btnDemo.setOnAction(e -> showDashboard());
 
-        Button btnCreate = new Button("Editor SQL (Interogare Custom)");
+        Button btnCreate = new Button("Editor SQL Custom");
         btnCreate.getStyleClass().add("start-btn");
-        // ACUM BUTONUL DUCE LA ECRANUL DE EDITOR
         btnCreate.setOnAction(e -> showCustomQueryScreen());
 
         contentBox.getChildren().addAll(title, subtitle, btnDemo, btnCreate);
         root.getChildren().add(contentBox);
 
-        Scene welcomeScene = new Scene(root, 1000, 600);
-        if(cssPath != null) welcomeScene.getStylesheets().add(cssPath);
-        primaryStage.setScene(welcomeScene);
+        primaryStage.getScene().setRoot(root);
     }
 
-    // --- SCENA 2: DASHBOARD (MENIU + TABEL) ---
+    // --- DASHBOARD ---
     private void showDashboard() {
         VBox menuBox = new VBox(5);
         menuBox.getStyleClass().add("sidebar");
 
-        Label menuTitle = new Label("RAPOARTE DISPONIBILE");
+        Label menuTitle = new Label("MENIU ADMINISTRARE");
         menuTitle.getStyleClass().add("menu-title");
         menuBox.getChildren().add(menuTitle);
 
-        Button btnBack = new Button("Inapoi la Start");
+        Button btnBack = new Button("Înapoi la Start");
         btnBack.getStyleClass().add("menu-button");
         btnBack.getStyleClass().add("back-button");
         btnBack.setOnAction(e -> showWelcomeScreen());
@@ -95,137 +95,100 @@ public class Main extends Application {
 
         ScrollPane scrollPane = new ScrollPane(menuBox);
         scrollPane.setFitToWidth(true);
-        scrollPane.setMinWidth(300); // Mai lat pentru titlurile lungi
-        scrollPane.setStyle("-fx-background: #f4f4f4; -fx-border-color: transparent;");
+        scrollPane.setMinWidth(320);
+        scrollPane.setStyle("-fx-background: #f8f9fa; -fx-border-color: transparent;");
 
-        // --- INTEROGARI SIMPLE (OLD) ---
-        addSectionLabel(menuBox, "--- DE BAZA (JOIN) ---");
+        // --- BUTOANE ---
+        addSectionLabel(menuBox, "INTEROGĂRI DE BAZĂ");
+        addButton(menuBox, "Utilizatori & Portofele", "SELECT u.nume_complet, u.email, w.adresa_wallet, w.tip_wallet \nFROM utilizatori u \nJOIN wallet w ON u.id_utilizator = w.id_utilizator");
+        addButton(menuBox, "Balanțe Detaliate", "SELECT u.username, c.simbol, s.cantitate_disponibila \nFROM solduri s \nJOIN utilizatori u ON s.id_utilizator = u.id_utilizator \nJOIN criptomonede c ON s.id_criptomoneda = c.id_moneda");
+        addButton(menuBox, "Top Tranzacții BUY", "SELECT u.username, c.simbol, t.cantitate, t.pret \nFROM tranzactii t \nJOIN utilizatori u ON t.id_utilizator = u.id_utilizator \nJOIN criptomonede c ON t.id_criptomoneda = c.id_moneda \nWHERE t.tip_tranzactie = 'BUY' \nORDER BY t.cantitate DESC LIMIT 10");
 
-        addButton(menuBox, "Utilizatori & Portofele",
-                "SELECT u.nume_complet, u.email, w.adresa_wallet, w.tip_wallet FROM utilizatori u JOIN wallet w ON u.id_utilizator = w.id_utilizator");
+        addSectionLabel(menuBox, "LOGICĂ COMPLEXĂ & ANALIZĂ");
+        addButton(menuBox, "1. Utilizatori 'Whales'", "SELECT u.username, SUM(o.suma) as total_depus \nFROM utilizatori u \nJOIN operatiuni_financiare o ON u.id_utilizator = o.id_utilizator \nWHERE o.tip_operatiune = 'DEPUNERE' \nGROUP BY u.username \nHAVING SUM(o.suma) > (SELECT AVG(suma) FROM operatiuni_financiare WHERE tip_operatiune = 'DEPUNERE')");
+        addButton(menuBox, "2. Monede fără tranzacții", "SELECT denumire_completa, simbol \nFROM criptomonede \nWHERE id_moneda NOT IN (SELECT DISTINCT id_criptomoneda FROM tranzactii)");
+        addButton(menuBox, "3. Cel mai bogat utilizator", "SELECT u.username, u.email, s.valoarea_totala \nFROM utilizatori u \nJOIN solduri s ON u.id_utilizator = s.id_utilizator \nWHERE s.valoarea_totala = (SELECT MAX(valoarea_totala) FROM solduri)");
+        addButton(menuBox, "4. Cea mai scumpă achiziție", "SELECT DISTINCT u.username, c.simbol, t.pret \nFROM utilizatori u \nJOIN tranzactii t ON u.id_utilizator = t.id_utilizator \nJOIN criptomonede c ON t.id_criptomoneda = c.id_moneda \nWHERE c.pret_curent = (SELECT MAX(pret_curent) FROM criptomonede)");
+        addButton(menuBox, "5. Portofele KYC Aprobat", "SELECT w.adresa_wallet, w.tip_wallet, u.username \nFROM wallet w \nJOIN utilizatori u ON w.id_utilizator = u.id_utilizator \nWHERE w.id_utilizator IN (SELECT id_utilizator FROM verificare_kyc WHERE status_verificare = 'aprobat')");
+        addButton(menuBox, "6. Monede Premium", "SELECT simbol, pret_curent \nFROM criptomonede \nWHERE pret_curent > (SELECT AVG(pret_curent) FROM criptomonede) \nORDER BY pret_curent DESC");
+        addButton(menuBox, "7. Fără retrageri (HODL)", "SELECT username, email \nFROM utilizatori \nWHERE id_utilizator NOT IN (SELECT DISTINCT id_utilizator FROM operatiuni_financiare WHERE tip_operatiune = 'RETRAGERE')");
+        addButton(menuBox, "8. VIP Inactivi", "SELECT username \nFROM utilizatori \nWHERE tip_utilizator = 'VIP' \nAND id_utilizator NOT IN (SELECT DISTINCT id_utilizator FROM tranzactii)");
+        addButton(menuBox, "9. Monede Populare", "SELECT c.simbol, SUM(s.cantitate_disponibila) as total_detinut \nFROM solduri s \nJOIN criptomonede c ON s.id_criptomoneda = c.id_moneda \nGROUP BY c.simbol \nHAVING SUM(s.cantitate_disponibila) > (SELECT AVG(cantitate_disponibila) FROM solduri)");
+        addButton(menuBox, "10. Useri Noi", "SELECT username, data_inregistrarii \nFROM utilizatori \nWHERE data_inregistrarii > (SELECT MIN(data_si_ora) FROM tranzactii) LIMIT 5");
 
-        addButton(menuBox, "Balante Detaliate",
-                "SELECT u.username, c.simbol, s.cantitate_disponibila FROM solduri s JOIN utilizatori u ON s.id_utilizator = u.id_utilizator JOIN criptomonede c ON s.id_criptomoneda = c.id_moneda");
+        sqlDisplayArea = new TextArea();
+        sqlDisplayArea.setEditable(false);
+        sqlDisplayArea.setWrapText(true);
+        sqlDisplayArea.setPrefHeight(120);
+        sqlDisplayArea.setPromptText("Selectează un raport...");
+        sqlDisplayArea.getStyleClass().add("sql-console");
 
-        addButton(menuBox, "Top Tranzactii BUY",
-                "SELECT u.username, c.simbol, t.cantitate, t.pret FROM tranzactii t JOIN utilizatori u ON t.id_utilizator = u.id_utilizator JOIN criptomonede c ON t.id_criptomoneda = c.id_moneda WHERE t.tip_tranzactie = 'BUY' ORDER BY t.cantitate DESC LIMIT 10");
-
-        // --- INTEROGARI AVANSATE (NEW - SUBQUERIES) ---
-        addSectionLabel(menuBox, "--- AVANSATE (SUBQUERIES) ---");
-
-        addButton(menuBox, "1. Utilizatori 'Whales' (Depuneri > Medie)",
-                "SELECT u.username, SUM(o.suma) as total_depus FROM utilizatori u JOIN operatiuni_financiare o ON u.id_utilizator = o.id_utilizator WHERE o.tip_operatiune = 'DEPUNERE' GROUP BY u.username HAVING SUM(o.suma) > (SELECT AVG(suma) FROM operatiuni_financiare WHERE tip_operatiune = 'DEPUNERE')");
-
-        addButton(menuBox, "2. Monede fara tranzactii (Nevandute)",
-                "SELECT denumire_completa, simbol FROM criptomonede WHERE id_moneda NOT IN (SELECT DISTINCT id_criptomoneda FROM tranzactii)");
-
-        addButton(menuBox, "3. Cel mai bogat utilizator (Max Sold)",
-                "SELECT u.username, u.email, s.valoarea_totala FROM utilizatori u JOIN solduri s ON u.id_utilizator = s.id_utilizator WHERE s.valoarea_totala = (SELECT MAX(valoarea_totala) FROM solduri)");
-
-        addButton(menuBox, "4. Cine a cumparat cea mai scumpa moneda?",
-                "SELECT DISTINCT u.username, c.simbol FROM utilizatori u JOIN tranzactii t ON u.id_utilizator = t.id_utilizator JOIN criptomonede c ON t.id_criptomoneda = c.id_moneda WHERE c.pret_curent = (SELECT MAX(pret_curent) FROM criptomonede)");
-
-        addButton(menuBox, "5. Portofelele userilor aprobati KYC",
-                "SELECT w.adresa_wallet, w.tip_wallet, u.username FROM wallet w JOIN utilizatori u ON w.id_utilizator = u.id_utilizator WHERE w.id_utilizator IN (SELECT id_utilizator FROM verificare_kyc WHERE status_verificare = 'aprobat')");
-
-        addButton(menuBox, "6. Monede 'Premium' (Pret > Medie)",
-                "SELECT simbol, pret_curent FROM criptomonede WHERE pret_curent > (SELECT AVG(pret_curent) FROM criptomonede) ORDER BY pret_curent DESC");
-
-        addButton(menuBox, "7. Utilizatori care NU au retras bani",
-                "SELECT username, email FROM utilizatori WHERE id_utilizator NOT IN (SELECT DISTINCT id_utilizator FROM operatiuni_financiare WHERE tip_operatiune = 'RETRAGERE')");
-
-        addButton(menuBox, "8. Useri VIP fara tranzactii",
-                "SELECT username FROM utilizatori WHERE tip_utilizator = 'VIP' AND id_utilizator NOT IN (SELECT DISTINCT id_utilizator FROM tranzactii)");
-
-        addButton(menuBox, "9. Monede populare (Detinute > Medie)",
-                "SELECT c.simbol, SUM(s.cantitate_disponibila) as total_detinut FROM solduri s JOIN criptomonede c ON s.id_criptomoneda = c.id_moneda GROUP BY c.simbol HAVING SUM(s.cantitate_disponibila) > (SELECT AVG(cantitate_disponibila) FROM solduri)");
-
-        addButton(menuBox, "10. Useri inregistrati recent (Dupa ultima tranzactie)",
-                "SELECT username, data_inregistrarii FROM utilizatori WHERE data_inregistrarii > (SELECT MIN(data_si_ora) FROM tranzactii) LIMIT 5");
-
-
-        // Init Table
         table = new TableView<>();
-        table.setPlaceholder(new Label("Selecteaza un raport din stanga..."));
+        table.setPlaceholder(new Label("Selectează o interogare din meniu..."));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(table, Priority.ALWAYS);
 
-        statusLabel = new Label("Dashboard activ.");
+        VBox centerBox = new VBox(0, sqlDisplayArea, table);
+
+        statusLabel = new Label("Sistem conectat.");
         statusLabel.getStyleClass().add("status-bar");
         statusLabel.setMaxWidth(Double.MAX_VALUE);
 
         BorderPane layout = new BorderPane();
         layout.setLeft(scrollPane);
-        layout.setCenter(table);
+        layout.setCenter(centerBox);
         layout.setBottom(statusLabel);
 
-        Scene scene = new Scene(layout, 1200, 700);
-        if(cssPath != null) scene.getStylesheets().add(cssPath);
-        primaryStage.setScene(scene);
+        primaryStage.getScene().setRoot(layout);
     }
 
-    // --- SCENA 3: EDITOR SQL CUSTOM ---
+    // --- EDITOR CUSTOM ---
     private void showCustomQueryScreen() {
-        VBox root = new VBox(10);
+        VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.getStyleClass().add("editor-container");
 
-        // Header
-        HBox header = new HBox(10);
+        HBox header = new HBox(15);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Button btnBack = new Button("Inapoi");
+        Button btnBack = new Button("Înapoi");
         btnBack.getStyleClass().add("menu-button");
-        btnBack.getStyleClass().add("back-button"); // Rosu
+        btnBack.getStyleClass().add("back-button");
         btnBack.setOnAction(e -> showWelcomeScreen());
 
         Label lblTitle = new Label("EDITOR SQL AVANSAT");
-        lblTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #333;");
-
+        lblTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 20px; -fx-text-fill: #333;");
         header.getChildren().addAll(btnBack, lblTitle);
 
-        // Zona de text input
         sqlEditor = new TextArea();
-        sqlEditor.setPromptText("Scrie comanda ta SQL aici... (ex: SELECT * FROM utilizatori)");
-        sqlEditor.setPrefHeight(150);
+        sqlEditor.setPromptText("Exemplu: SELECT * FROM utilizatori");
+        sqlEditor.setPrefHeight(180);
         sqlEditor.getStyleClass().add("sql-text-area");
 
-        // Buton Executa
-        Button btnRun = new Button("Executa Comanda SQL");
-        btnRun.getStyleClass().add("start-btn"); // Stilul albastru
-        btnRun.setStyle("-fx-background-color: #28a745;"); // Il facem verde
+        Button btnRun = new Button("Execută Comanda");
+        btnRun.getStyleClass().add("start-btn");
         btnRun.setMaxWidth(200);
         btnRun.setOnAction(e -> {
             String customSql = sqlEditor.getText();
-            if(customSql.trim().isEmpty()) {
-                Alert a = new Alert(Alert.AlertType.WARNING, "Scrie intai o comanda SQL!");
-                a.show();
-                return;
-            }
-            executaInterogare(customSql, "Custom Query");
+            if(!customSql.trim().isEmpty()) executaInterogare(customSql, "Custom Query");
         });
 
-        // Tabelul pentru rezultate (il refacem aici)
         table = new TableView<>();
-        table.setPlaceholder(new Label("Rezultatele vor aparea aici..."));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(table, Priority.ALWAYS);
 
-        statusLabel = new Label("Asteptare comanda...");
+        statusLabel = new Label("Așteptare...");
         statusLabel.getStyleClass().add("status-bar");
         statusLabel.setMaxWidth(Double.MAX_VALUE);
 
         root.getChildren().addAll(header, sqlEditor, btnRun, table, statusLabel);
 
-        Scene scene = new Scene(root, 1000, 700);
-        if(cssPath != null) scene.getStylesheets().add(cssPath);
-        primaryStage.setScene(scene);
+        primaryStage.getScene().setRoot(root);
     }
-
-    // --- Helper Methods ---
 
     private void addSectionLabel(VBox container, String text) {
         Label l = new Label(text);
+        l.setMaxWidth(Double.MAX_VALUE);
         l.getStyleClass().add("section-label");
         container.getChildren().add(l);
     }
@@ -234,23 +197,24 @@ public class Main extends Application {
         Button btn = new Button(title);
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.getStyleClass().add("menu-button");
-        btn.setOnAction(e -> executaInterogare(sqlQuery, title));
+        btn.setOnAction(e -> {
+            if(sqlDisplayArea != null) sqlDisplayArea.setText(sqlQuery);
+            executaInterogare(sqlQuery, title);
+        });
         container.getChildren().add(btn);
     }
 
+    // --- AICI AM REPARAT SORTAREA ---
     private void executaInterogare(String sql, String titlu) {
         table.getColumns().clear();
         table.getItems().clear();
-        statusLabel.setText("Se executa: " + titlu + "...");
-
+        statusLabel.setText("Procesare: " + titlu + "...");
         ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        try (Connection conn = DBUtils.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Verificam daca e SELECT sau altceva (INSERT/UPDATE)
             boolean isResultSet = pstmt.execute();
-
             if(isResultSet) {
                 try(ResultSet rs = pstmt.getResultSet()) {
                     ResultSetMetaData metaData = rs.getMetaData();
@@ -261,9 +225,25 @@ public class Main extends Application {
                         String columnName = metaData.getColumnLabel(i + 1).toUpperCase();
                         TableColumn<ObservableList<String>, String> col = new TableColumn<>(columnName);
                         col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+
+                        // --- FIX PENTRU SORTARE NUMERICĂ ---
+                        col.setComparator((s1, s2) -> {
+                            if (s1 == null && s2 == null) return 0;
+                            if (s1 == null) return -1;
+                            if (s2 == null) return 1;
+                            // Încercăm să le comparăm ca numere
+                            try {
+                                double d1 = Double.parseDouble(s1);
+                                double d2 = Double.parseDouble(s2);
+                                return Double.compare(d1, d2);
+                            } catch (NumberFormatException e) {
+                                // Dacă nu sunt numere (ex: nume, email), le comparăm ca text normal
+                                return s1.compareToIgnoreCase(s2);
+                            }
+                        });
+
                         table.getColumns().add(col);
                     }
-
                     while (rs.next()) {
                         ObservableList<String> row = FXCollections.observableArrayList();
                         for (int i = 1; i <= columnCount; i++) {
@@ -273,21 +253,15 @@ public class Main extends Application {
                         data.add(row);
                     }
                     table.setItems(data);
-                    statusLabel.setText("Succes: " + data.size() + " randuri returnate.");
+                    statusLabel.setText("✅ Rezultate: " + data.size());
                 }
             } else {
-                // Pentru INSERT/UPDATE/DELETE
                 int rows = pstmt.getUpdateCount();
-                statusLabel.setText("Comanda executata cu succes. Randuri afectate: " + rows);
-                table.setPlaceholder(new Label("Comanda de modificare executata cu succes!"));
+                statusLabel.setText("✅ Comandă executată. Rânduri afectate: " + rows);
             }
-
         } catch (SQLException e) {
-            // Nu arata popup pentru orice eroare mica, doar status
-            statusLabel.setText("Eroare SQL: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Eroare SQL");
-            alert.setContentText(e.getMessage());
+            statusLabel.setText("❌ Eroare: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
             alert.show();
         }
     }
