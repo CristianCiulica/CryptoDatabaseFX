@@ -1,0 +1,169 @@
+/* --- FUNDAL GENERAL --- */
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+/* --- PAGINA DE START (WELCOME) --- */
+.welcome-root {
+    /* AICI AM SCHIMBAT NUMELE IMAGINII */
+    -fx-background-image: url('fundal.png');
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+/* Cutia centrală - Stil "Glass" curat */
+.welcome-container {
+    -fx-background-color: rgba(255, 255, 255, 0.95); /* Alb aproape opac */
+    -fx-background-radius: 12; /* Colțuri rotunjite fin */
+    -fx-padding: 40;
+    /* Umbră foarte fină și difuză, nu neagră și groasă */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 5);
+}
+
+/* Titlul - Simplu, Gri închis, Fără efecte neon */
+.welcome-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-padding: 0 0 10 0;
+}
+
+/* Subtitlul */
+.welcome-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+    -fx-padding: 0 0 30 0;
+}
+
+/* Butoanele de Start - Simple și curate */
+.start-btn {
+    -fx-background-color: #0078d7; /* Albastru Windows standard */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 12 30;
+    -fx-cursor: hand;
+    -fx-min-width: 220px;
+    -fx-border-width: 0;
+}
+
+.start-btn:hover {
+    -fx-background-color: #005a9e; /* Albastru puțin mai închis la hover */
+}
+
+/* --- DASHBOARD (MENIUL LATERAL) --- */
+.sidebar {
+    -fx-background-color: #f4f4f4; /* Gri foarte deschis */
+    -fx-padding: 15;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 1 0 0; /* Doar o linie fină în dreapta */
+}
+
+.menu-title {
+    -fx-text-fill: #888888;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10 5;
+}
+
+/* Butoanele din meniu - Flat design */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+    -fx-font-size: 13px;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-padding: 10 15;
+    -fx-background-radius: 6;
+}
+
+.menu-button:hover {
+    -fx-background-color: #e1e1e1; /* Gri deschis la hover */
+}
+
+/* Butonul roșu de ieșire */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d32f2f;
+    -fx-font-weight: bold;
+}
+.back-button:hover {
+    -fx-background-color: #ffebee;
+}
+
+/* --- TABELUL --- */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #555555;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-cell {
+    -fx-text-fill: #333333;
+    -fx-alignment: center-left;
+}
+
+/* Rând selectat - Albastru deschis */
+.table-view:focused .table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}
+
+/* --- STATUS BAR --- */
+.status-bar {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #666666;
+    -fx-padding: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1 0 0 0;
+}
+/* --- ZONA EDITOR SQL (CUSTOM QUERY) --- */
+.editor-container {
+    -fx-background-color: #ffffff;
+    -fx-padding: 20;
+}
+
+.sql-text-area {
+    -fx-font-family: 'Consolas', 'Monospaced', monospace; /* Font de programare */
+    -fx-font-size: 14px;
+    -fx-control-inner-background: #1e1e1e; /* Fundal negru editor */
+    -fx-text-fill: #00e676; /* Text verde matrix */
+    -fx-highlight-fill: #0078d7;
+    -fx-highlight-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+}
+
+.run-btn {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.run-btn:hover {
+    -fx-background-color: #218838;
+}
+
+.section-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #0078d7;
+    -fx-padding: 15 0 5 10;
+    -fx-font-size: 13px;
+}
