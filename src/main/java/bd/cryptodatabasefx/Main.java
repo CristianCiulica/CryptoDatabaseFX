@@ -80,14 +80,11 @@ public class Main extends Application {
         VBox menuBox = new VBox(5);
         menuBox.getStyleClass().add("sidebar");
 
-        Label menuTitle = new Label("MENIU ADMINISTRARE");
-        menuTitle.getStyleClass().add("menu-title");
-        menuBox.getChildren().add(menuTitle);
-
-        Button btnBack = new Button("Înapoi la Start");
-        btnBack.getStyleClass().add("menu-button");
+        Button btnBack = new Button("⬅");
         btnBack.getStyleClass().add("back-button");
+        btnBack.setTooltip(new Tooltip("Înapoi la Ecranul de Start"));
         btnBack.setOnAction(e -> showWelcomeScreen());
+
         menuBox.getChildren().add(btnBack);
 
         ScrollPane scrollPane = new ScrollPane(menuBox);
@@ -111,6 +108,7 @@ public class Main extends Application {
         addButton(menuBox, "8. VIP Inactivi", "SELECT username \nFROM utilizatori \nWHERE tip_utilizator = 'VIP' \nAND id_utilizator NOT IN (SELECT DISTINCT id_utilizator FROM tranzactii)");
         addButton(menuBox, "9. Monede Populare", "SELECT c.simbol, SUM(s.cantitate_disponibila) as total_detinut \nFROM solduri s \nJOIN criptomonede c ON s.id_criptomoneda = c.id_moneda \nGROUP BY c.simbol \nHAVING SUM(s.cantitate_disponibila) > (SELECT AVG(cantitate_disponibila) FROM solduri)");
         addButton(menuBox, "10. Useri Noi", "SELECT username, data_inregistrarii \nFROM utilizatori \nWHERE data_inregistrarii > (SELECT MIN(data_si_ora) FROM tranzactii) LIMIT 5");
+
 
         sqlDisplayArea = new TextArea();
         sqlDisplayArea.setEditable(false);
@@ -145,14 +143,14 @@ public class Main extends Application {
 
         HBox header = new HBox(15);
         header.setAlignment(Pos.CENTER_LEFT);
-
-        Button btnBack = new Button("Înapoi");
-        btnBack.getStyleClass().add("menu-button");
+        Button btnBack = new Button("⬅");
         btnBack.getStyleClass().add("back-button");
+        btnBack.setTooltip(new Tooltip("Înapoi la Ecranul de Start"));
         btnBack.setOnAction(e -> showWelcomeScreen());
 
         Label lblTitle = new Label("EDITOR SQL");
         lblTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 20px; -fx-text-fill: #333;");
+
         header.getChildren().addAll(btnBack, lblTitle);
 
         sqlEditor = new TextArea();

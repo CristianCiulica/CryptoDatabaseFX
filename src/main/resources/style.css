@@ -87,12 +87,31 @@
 }
 
 .back-button {
-    -fx-text-fill: #d32f2f;
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #555555;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
+
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-color: #dddddd;
+    -fx-border-width: 1;
+
+    -fx-cursor: hand;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-margin: 5 0 10 5;
 }
 
 .back-button:hover {
-    -fx-background-color: #ffebee;
+    -fx-background-color: #fff1f0;
+    -fx-text-fill: #d32f2f;
+    -fx-border-color: #d32f2f;
+    -fx-effect: dropshadow(three-pass-box, rgba(211, 47, 47, 0.2), 5, 0, 0, 2);
 }
 
 .sql-console {
