@@ -44,8 +44,6 @@ public class Main extends Application {
         showWelcomeScreen();
         primaryStage.show();
     }
-
-    // --- ECRAN START ---
     private void showWelcomeScreen() {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
@@ -64,11 +62,11 @@ public class Main extends Application {
         Label subtitle = new Label("Proiect Baze de Date");
         subtitle.getStyleClass().add("welcome-subtitle");
 
-        Button btnDemo = new Button("Rapoarte Predefinite");
+        Button btnDemo = new Button("Interogări Predefinite");
         btnDemo.getStyleClass().add("start-btn");
         btnDemo.setOnAction(e -> showDashboard());
 
-        Button btnCreate = new Button("Editor SQL Custom");
+        Button btnCreate = new Button("Scrie SQL");
         btnCreate.getStyleClass().add("start-btn");
         btnCreate.setOnAction(e -> showCustomQueryScreen());
 
@@ -78,7 +76,6 @@ public class Main extends Application {
         primaryStage.getScene().setRoot(root);
     }
 
-    // --- DASHBOARD ---
     private void showDashboard() {
         VBox menuBox = new VBox(5);
         menuBox.getStyleClass().add("sidebar");
@@ -98,7 +95,6 @@ public class Main extends Application {
         scrollPane.setMinWidth(320);
         scrollPane.setStyle("-fx-background: #f8f9fa; -fx-border-color: transparent;");
 
-        // --- BUTOANE ---
         addSectionLabel(menuBox, "INTEROGĂRI DE BAZĂ");
         addButton(menuBox, "Utilizatori & Portofele", "SELECT u.nume_complet, u.email, w.adresa_wallet, w.tip_wallet \nFROM utilizatori u \nJOIN wallet w ON u.id_utilizator = w.id_utilizator");
         addButton(menuBox, "Balanțe Detaliate", "SELECT u.username, c.simbol, s.cantitate_disponibila \nFROM solduri s \nJOIN utilizatori u ON s.id_utilizator = u.id_utilizator \nJOIN criptomonede c ON s.id_criptomoneda = c.id_moneda");
@@ -142,7 +138,6 @@ public class Main extends Application {
         primaryStage.getScene().setRoot(layout);
     }
 
-    // --- EDITOR CUSTOM ---
     private void showCustomQueryScreen() {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
@@ -156,7 +151,7 @@ public class Main extends Application {
         btnBack.getStyleClass().add("back-button");
         btnBack.setOnAction(e -> showWelcomeScreen());
 
-        Label lblTitle = new Label("EDITOR SQL AVANSAT");
+        Label lblTitle = new Label("EDITOR SQL");
         lblTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 20px; -fx-text-fill: #333;");
         header.getChildren().addAll(btnBack, lblTitle);
 
@@ -204,7 +199,6 @@ public class Main extends Application {
         container.getChildren().add(btn);
     }
 
-    // --- AICI AM REPARAT SORTAREA ---
     private void executaInterogare(String sql, String titlu) {
         table.getColumns().clear();
         table.getItems().clear();
@@ -226,18 +220,15 @@ public class Main extends Application {
                         TableColumn<ObservableList<String>, String> col = new TableColumn<>(columnName);
                         col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
 
-                        // --- FIX PENTRU SORTARE NUMERICĂ ---
                         col.setComparator((s1, s2) -> {
                             if (s1 == null && s2 == null) return 0;
                             if (s1 == null) return -1;
                             if (s2 == null) return 1;
-                            // Încercăm să le comparăm ca numere
                             try {
                                 double d1 = Double.parseDouble(s1);
                                 double d2 = Double.parseDouble(s2);
                                 return Double.compare(d1, d2);
                             } catch (NumberFormatException e) {
-                                // Dacă nu sunt numere (ex: nume, email), le comparăm ca text normal
                                 return s1.compareToIgnoreCase(s2);
                             }
                         });

@@ -20,30 +20,27 @@ CREATE TABLE utilizatori (
                              status_cont VARCHAR(20) DEFAULT 'activ'
 );
 
--- Tabela CRIPTOMONEDE
 CREATE TABLE criptomonede (
                               id_moneda SERIAL PRIMARY KEY,
                               simbol VARCHAR(10) UNIQUE NOT NULL,
                               denumire_completa VARCHAR(50) NOT NULL,
                               pret_curent DECIMAL(20, 8) NOT NULL,
-                              pret_maxim DECIMAL(20, 8), -- Adaugat pentru istoric ATH
+                              pret_maxim DECIMAL(20, 8),
                               data_lansarii DATE,
                               descriere TEXT,
                               status VARCHAR(20) DEFAULT 'activ',
                               comision_trading DECIMAL(5, 2) DEFAULT 0.1
 );
 
--- Tabela WALLET (Portofel)
 CREATE TABLE wallet (
                         id_wallet SERIAL PRIMARY KEY,
                         id_utilizator INT REFERENCES utilizatori(id_utilizator) ON DELETE CASCADE,
                         adresa_wallet VARCHAR(100) UNIQUE NOT NULL,
-                        tip_wallet VARCHAR(20), -- hot, cold
+                        tip_wallet VARCHAR(20),
                         data_crearii TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         status VARCHAR(20) DEFAULT 'activ'
 );
 
--- Tabela VERIFICARE KYC
 CREATE TABLE verificare_kyc (
                                 id_verificare SERIAL PRIMARY KEY,
                                 id_utilizator INT REFERENCES utilizatori(id_utilizator) ON DELETE CASCADE,
@@ -51,15 +48,14 @@ CREATE TABLE verificare_kyc (
                                 cnp VARCHAR(20),
                                 tip_document VARCHAR(50),
                                 data_trimiterii TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                status_verificare VARCHAR(20) DEFAULT 'in_asteptare', -- in_asteptare, aprobat, respins
+                                status_verificare VARCHAR(20) DEFAULT 'in_asteptare',
                                 tara_emitenta VARCHAR(50)
 );
 
--- Tabela OPERATIUNI FINANCIARE (Fiat)
 CREATE TABLE operatiuni_financiare (
                                        id_operatiune SERIAL PRIMARY KEY,
                                        id_utilizator INT REFERENCES utilizatori(id_utilizator) ON DELETE CASCADE,
-                                       tip_operatiune VARCHAR(20) NOT NULL, -- DEPUNERE, RETRAGERE
+                                       tip_operatiune VARCHAR(20) NOT NULL,
                                        suma DECIMAL(15, 2) NOT NULL,
                                        moneda_fiat VARCHAR(5) DEFAULT 'RON',
                                        data_operatiune TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -67,7 +63,6 @@ CREATE TABLE operatiuni_financiare (
                                        status VARCHAR(20) DEFAULT 'complet'
 );
 
--- Tabela SOLDURI (Crypto)
 CREATE TABLE solduri (
                          id_sold SERIAL PRIMARY KEY,
                          id_utilizator INT REFERENCES utilizatori(id_utilizator) ON DELETE CASCADE,
@@ -75,16 +70,15 @@ CREATE TABLE solduri (
                          id_wallet INT REFERENCES wallet(id_wallet) ON DELETE CASCADE,
                          cantitate_disponibilA DECIMAL(20, 8) DEFAULT 0,
                          cantitate_blocata DECIMAL(20, 8) DEFAULT 0,
-                         valoarea_totala DECIMAL(20, 2), -- Calculat (cantitate * pret_curent)
+                         valoarea_totala DECIMAL(20, 2),
                          data_actualizare TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela TRANZACTII
 CREATE TABLE tranzactii (
                             id_tranzactie SERIAL PRIMARY KEY,
                             id_utilizator INT REFERENCES utilizatori(id_utilizator) ON DELETE CASCADE,
                             id_criptomoneda INT REFERENCES criptomonede(id_moneda) ON DELETE CASCADE,
-                            tip_tranzactie VARCHAR(10) NOT NULL, -- BUY, SELL
+                            tip_tranzactie VARCHAR(10) NOT NULL,
                             cantitate DECIMAL(20, 8) NOT NULL,
                             pret DECIMAL(20, 8) NOT NULL,
                             comision DECIMAL(10, 2),
@@ -92,7 +86,6 @@ CREATE TABLE tranzactii (
                             status VARCHAR(20) DEFAULT 'finalizat'
 );
 
--- Tabela ISTORIC PRET
 CREATE TABLE istoric_pret (
                               id_istoric SERIAL PRIMARY KEY,
                               id_moneda INT REFERENCES criptomonede(id_moneda) ON DELETE CASCADE,
@@ -102,7 +95,6 @@ CREATE TABLE istoric_pret (
                               data_si_ora_exacta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela LISTA FAVORITE
 CREATE TABLE lista_favorite (
                                 id_favorit SERIAL PRIMARY KEY,
                                 id_utilizator INT REFERENCES utilizatori(id_utilizator) ON DELETE CASCADE,
@@ -110,11 +102,6 @@ CREATE TABLE lista_favorite (
                                 data_adaugarii TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =============================================================
--- 2. POPULARE DATE (INSERTS)
--- =============================================================
-
--- A. UTILIZATORI (Reali + Cazuri Speciale)
 INSERT INTO utilizatori (nume_complet, username, email, parola, numar_de_telefon, tip_utilizator, status_cont, data_inregistrarii) VALUES
                                                                                                                                        ('Andrei Popescu', 'apopescu', 'andrei.popescu@corporate.ro', 'pass123', '0722100100', 'VIP', 'activ', '2023-01-10'),
                                                                                                                                        ('Elena Ionescu', 'elena.i', 'elena.ionescu@business.ro', 'pass123', '0722100101', 'VIP', 'activ', '2023-01-15'),
@@ -137,25 +124,18 @@ INSERT INTO utilizatori (nume_complet, username, email, parola, numar_de_telefon
                                                                                                                                        ('Bogdan Voinea', 'bvoinea', 'bogdan.voinea@gmail.com', 'pass123', '0722100118', 'Standard', 'blocat', '2023-10-15'),
                                                                                                                                        ('Diana Manole', 'dmanole', 'diana.manole@yahoo.com', 'pass123', '0722100119', 'Standard', 'activ', '2023-11-01');
 
--- CAZURI SPECIALE PENTRU INTEROGĂRI
--- 1. Horia HODL (Doar depuneri, fara retrageri)
 INSERT INTO utilizatori (nume_complet, username, email, parola, tip_utilizator, status_cont, data_inregistrarii)
 VALUES ('Horia HODL', 'horia_hodl', 'horia@crypto.ro', 'pass123', 'Standard', 'activ', '2023-01-01');
 
--- 2. Barbu Delavrancea (VIP Inactiv - Fara tranzactii)
 INSERT INTO utilizatori (nume_complet, username, email, parola, tip_utilizator, status_cont, data_inregistrarii)
 VALUES ('Barbu Delavrancea', 'barbu_vip', 'barbu@vip.ro', 'pass123', 'VIP', 'activ', NOW());
 
--- 3. Tiriac Ion (Whale - Balena)
 INSERT INTO utilizatori (nume_complet, username, email, parola, tip_utilizator)
 VALUES ('Tiriac Ion', 'tiriac_crypto', 'ion@tiriac.ro', 'pass123', 'VIP');
 
--- 4. Nou Venit (Recent)
 INSERT INTO utilizatori (nume_complet, username, email, parola, tip_utilizator, data_inregistrarii)
 VALUES ('Nou Venit', 'newbie_2026', 'new@email.com', 'pass123', 'Standard', NOW());
 
-
--- B. CRIPTOMONEDE (Cu Pret Maxim NULL initial)
 INSERT INTO criptomonede (simbol, denumire_completa, pret_curent, data_lansarii, status, comision_trading) VALUES
                                                                                                                ('BTC', 'Bitcoin', 64500.00, '2009-01-03', 'activ', 0.1),
                                                                                                                ('ETH', 'Ethereum', 3450.00, '2015-07-30', 'activ', 0.1),
@@ -178,13 +158,9 @@ INSERT INTO criptomonede (simbol, denumire_completa, pret_curent, data_lansarii,
                                                                                                                ('FIL', 'Filecoin', 8.50, '2017-07-15', 'activ', 0.2),
                                                                                                                ('APT', 'Aptos', 15.20, '2022-10-12', 'activ', 0.2);
 
--- Moneda GHOST (Fara tranzactii)
 INSERT INTO criptomonede (simbol, denumire_completa, pret_curent, data_lansarii, status)
 VALUES ('GHOST', 'Ghost Coin', 0.99, '2024-01-01', 'activ');
 
-
--- C. WALLETS
--- 1. Pentru userii normali
 INSERT INTO wallet (id_utilizator, adresa_wallet, tip_wallet, status)
 SELECT id_utilizator, '0x' || md5(random()::text),
        CASE WHEN random() > 0.5 THEN 'hot' ELSE 'cold' END,
@@ -192,16 +168,12 @@ SELECT id_utilizator, '0x' || md5(random()::text),
 FROM utilizatori
 WHERE username NOT IN ('tiriac_crypto', 'horia_hodl');
 
--- 2. Wallet Tiriac
 INSERT INTO wallet (id_utilizator, adresa_wallet, tip_wallet, status)
 VALUES ((SELECT id_utilizator FROM utilizatori WHERE username='tiriac_crypto'), '0xTiriacWallet', 'cold', 'activ');
 
--- 3. Wallet Horia
 INSERT INTO wallet (id_utilizator, adresa_wallet, tip_wallet, status)
 VALUES ((SELECT id_utilizator FROM utilizatori WHERE username='horia_hodl'), '0xHoriaWallet', 'hot', 'activ');
 
-
--- D. KYC
 INSERT INTO verificare_kyc (id_utilizator, cnp, tip_document, nume_complet, status_verificare, tara_emitenta)
 SELECT id_utilizator,
        (1000000000000 + floor(random() * 8999999999999))::text,
@@ -211,33 +183,23 @@ SELECT id_utilizator,
        'Romania'
 FROM utilizatori WHERE tip_utilizator IN ('VIP', 'Premium');
 
--- KYC Horia
 INSERT INTO verificare_kyc (id_utilizator, cnp, tip_document, nume_complet, status_verificare)
 VALUES ((SELECT id_utilizator FROM utilizatori WHERE username='horia_hodl'), '1890101123456', 'CI', 'Horia HODL', 'aprobat');
 
-
--- E. OPERATIUNI FINANCIARE
--- Depuneri Random
 INSERT INTO operatiuni_financiare (id_utilizator, tip_operatiune, suma, moneda_fiat, status)
 SELECT id_utilizator, 'DEPUNERE', floor(random() * 5000 + 100), 'RON', 'complet'
 FROM utilizatori WHERE id_utilizator <= 20;
 
--- Depunere Uriașă Tiriac
 INSERT INTO operatiuni_financiare (id_utilizator, tip_operatiune, suma, moneda_fiat, status)
 VALUES ((SELECT id_utilizator FROM utilizatori WHERE username='tiriac_crypto'), 'DEPUNERE', 5000000, 'EUR', 'complet');
 
--- Depunere Horia (fara retrageri)
 INSERT INTO operatiuni_financiare (id_utilizator, tip_operatiune, suma, moneda_fiat, status)
 VALUES ((SELECT id_utilizator FROM utilizatori WHERE username='horia_hodl'), 'DEPUNERE', 5000, 'RON', 'complet');
 
--- Retrageri pentru useri normali (ca sa nu fie toti HODL)
 INSERT INTO operatiuni_financiare (id_utilizator, tip_operatiune, suma, moneda_fiat, status)
 SELECT id_utilizator, 'RETRAGERE', 500, 'RON', 'complet'
 FROM utilizatori WHERE id_utilizator <= 10;
 
-
--- F. SOLDURI (BALANȚE)
--- Sold Tiriac (Mult BTC)
 INSERT INTO solduri (id_utilizator, id_criptomoneda, id_wallet, cantitate_disponibila, valoarea_totala)
 VALUES (
            (SELECT id_utilizator FROM utilizatori WHERE username='tiriac_crypto'),
@@ -246,7 +208,6 @@ VALUES (
            1000, 65000000
        );
 
--- Sold Horia (Mult ETH)
 INSERT INTO solduri (id_utilizator, id_criptomoneda, id_wallet, cantitate_disponibila, valoarea_totala)
 VALUES (
            (SELECT id_utilizator FROM utilizatori WHERE username='horia_hodl'),
@@ -255,7 +216,6 @@ VALUES (
            5000, 15000000
        );
 
--- Solduri Random pentru useri
 INSERT INTO solduri (id_utilizator, id_criptomoneda, id_wallet, cantitate_disponibila)
 SELECT u.id_utilizator, c.id_moneda, w.id_wallet, (random() * 10)
 FROM utilizatori u
@@ -264,9 +224,6 @@ FROM utilizatori u
 WHERE u.id_utilizator <= 20 AND c.simbol IN ('ADA', 'XRP', 'DOGE', 'SOL')
   AND random() > 0.8;
 
-
--- G. TRANZACTII
--- Tranzactii random
 INSERT INTO tranzactii (id_utilizator, id_criptomoneda, tip_tranzactie, cantitate, pret, status)
 SELECT
     floor(random() * 20 + 1),
@@ -277,7 +234,6 @@ SELECT
     'finalizat'
 FROM generate_series(1, 50);
 
--- Tranzacția cea mai scumpă (Tiriac cumpara BTC scump)
 INSERT INTO tranzactii (id_utilizator, id_criptomoneda, tip_tranzactie, cantitate, pret, status)
 VALUES (
            (SELECT id_utilizator FROM utilizatori WHERE username='tiriac_crypto'),
@@ -290,18 +246,11 @@ UPDATE criptomonede SET pret_maxim = 73750.00 WHERE simbol = 'BTC';
 UPDATE criptomonede SET pret_maxim = 4891.00 WHERE simbol = 'ETH';
 UPDATE criptomonede SET pret_maxim = 260.00 WHERE simbol = 'SOL';
 
--- 2. Manipulare prețuri pentru interogări
-UPDATE criptomonede SET pret_curent = 99999 WHERE simbol = 'BTC'; -- Cel mai scump
-UPDATE criptomonede SET pret_curent = 0.1 WHERE simbol = 'DOGE'; -- Ieftin
+UPDATE criptomonede SET pret_curent = 99999 WHERE simbol = 'BTC';
+UPDATE criptomonede SET pret_curent = 0.1 WHERE simbol = 'DOGE';
 
--- 3. Asigurare ca GHOST nu are tranzactii (Stergem daca exista din greseala)
 DELETE FROM tranzactii WHERE id_criptomoneda = (SELECT id_moneda FROM criptomonede WHERE simbol = 'GHOST');
 
--- 4. Asigurare ca Horia nu are retrageri
 DELETE FROM operatiuni_financiare WHERE id_utilizator = (SELECT id_utilizator FROM utilizatori WHERE username='horia_hodl') AND tip_operatiune = 'RETRAGERE';
 
--- 5. Asigurare ca Barbu (VIP) nu are tranzactii
 DELETE FROM tranzactii WHERE id_utilizator = (SELECT id_utilizator FROM utilizatori WHERE username='barbu_vip');
-
-
-SELECT 'BAZA DE DATE A FOST RECONSTRUITA COMPLET SI CORECT!' as status;

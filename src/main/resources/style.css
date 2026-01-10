@@ -1,28 +1,20 @@
-/* --- FUNDAL GENERAL --- */
 .root {
     -fx-font-family: 'Segoe UI', sans-serif;
 }
 
-/* --- PAGINA DE START --- */
 .welcome-root {
     -fx-background-image: url('fundal.png');
     -fx-background-size: cover;
     -fx-background-position: center;
 }
 
-/* CARDUL CENTRAL - EFECT DRAMATIC DE LUMINĂ */
 .welcome-container {
-    /* Gradient puternic: Alb (sus-dreapta) -> Gri (jos-stânga) */
     -fx-background-color: linear-gradient(to bottom left, #ffffff 0%, #a0a0a0 100%);
-
-    /* Umbră neagră, puternică și deplasată */
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 60, 0.4, -30, 30);
-
     -fx-background-radius: 15;
     -fx-padding: 60;
 }
 
-/* Titlul */
 .welcome-title {
     -fx-font-size: 40px;
     -fx-font-weight: bold;
@@ -38,36 +30,36 @@
     -fx-padding: 0 0 40 0;
 }
 
-/* --- BUTOANE FLAT (SIMPLE) --- */
 .start-btn {
     -fx-background-color: #0078d7;
     -fx-text-fill: white;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-background-radius: 6; /* Puțin rotunjite */
+    -fx-background-radius: 6;
     -fx-padding: 12 40;
     -fx-cursor: hand;
     -fx-min-width: 300px;
-    -fx-effect: null; /* Fără umbră (Flat) */
+    -fx-effect: null;
 }
 
 .start-btn:hover {
     -fx-background-color: #005a9e;
 }
 
-/* --- MENIU LATERAL --- */
 .sidebar {
     -fx-background-color: #f4f4f4;
     -fx-padding: 15;
     -fx-border-color: #cccccc;
     -fx-border-width: 0 1 0 0;
 }
+
 .menu-title {
     -fx-text-fill: #222;
     -fx-font-size: 14px;
     -fx-font-weight: 900;
     -fx-padding: 10 0 20 5;
 }
+
 .section-label {
     -fx-background-color: #e3f2fd;
     -fx-text-fill: #0078d7;
@@ -79,6 +71,7 @@
     -fx-max-width: Infinity;
     -fx-margin: 15 0 5 0;
 }
+
 .menu-button {
     -fx-background-color: transparent;
     -fx-text-fill: #333;
@@ -88,63 +81,56 @@
     -fx-padding: 8 15;
     -fx-background-radius: 4;
 }
+
 .menu-button:hover {
     -fx-background-color: #ddd;
 }
+
 .back-button {
     -fx-text-fill: #d32f2f;
     -fx-font-weight: bold;
 }
+
 .back-button:hover {
     -fx-background-color: #ffebee;
 }
 
-/* --- AICI AM MODIFICAT: STILUL MATRIX PENTRU SQL --- */
-
-/* 1. Consola din Dashboard */
 .sql-console {
-    /* Fundal Negru */
     -fx-control-inner-background: #121212;
-    /* Text Verde Neon */
     -fx-text-fill: #00e676;
     -fx-font-family: 'Consolas', monospace;
     -fx-font-size: 14px;
     -fx-border-width: 0;
-    /* Culoare selecție text */
     -fx-highlight-fill: #00e676;
     -fx-highlight-text-fill: black;
 }
 
-/* 2. Editorul Custom (Unde scrii tu) */
 .sql-text-area {
-    /* Fundal Negru */
     -fx-control-inner-background: #121212;
-    /* Text Verde Neon */
     -fx-text-fill: #00e676;
     -fx-font-family: 'Consolas', monospace;
     -fx-font-size: 15px;
     -fx-border-color: #333;
     -fx-border-radius: 4;
-    /* Culoare selecție text */
     -fx-highlight-fill: #00e676;
     -fx-highlight-text-fill: black;
 }
 
-/* Containerul editorului */
 .editor-container {
-    -fx-background-color: #f0f0f0; /* Gri deschis în jur */
+    -fx-background-color: #f0f0f0;
 }
 
-/* --- TABEL --- */
 .table-view .column-header-background {
     -fx-background-color: #fff;
     -fx-border-width: 0 0 2 0;
     -fx-border-color: #eee;
 }
+
 .table-view .column-header .label {
     -fx-text-fill: #444;
     -fx-font-weight: bold;
 }
+
 .status-bar {
     -fx-background-color: white;
     -fx-text-fill: #666;
